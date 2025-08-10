@@ -1,0 +1,11 @@
+{
+    "name": "Upcoming Concerts",
+    "version": "1.0.0",
+    "description": "A Chrome extension to display upcoming concerts in Toronto.",
+    "manifest_version": 3,
+    "author": "iba",
+    "action": {
+        "default_popup": "index.html",
+        "default_title": "Upcoming Concerts"
+    }
+}                      
