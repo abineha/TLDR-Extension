@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         navigator.clipboard.writeText(summaryText).then(() => {
             const originalText = elements.copyButton.textContent;
-            elements.copyButton.textContent = '✅ Copied!';
+            elements.copyButton.textContent = '✔ Copied!';
             setTimeout(() => {
                 elements.copyButton.textContent = originalText;
             }, 2000);
