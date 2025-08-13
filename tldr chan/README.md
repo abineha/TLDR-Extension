@@ -1,19 +1,19 @@
-# TLDR Chan - Chrome Extension
+# TLDR - Chrome Extension
 
 A Chrome extension that summarizes highlighted text and displays key points in bullet format.
 
 ## Features
 
-- 📝 **Smart Text Summarization**: Automatically extracts key points from selected text
-- 🎯 **Bullet Point Display**: Clean, organized summary in easy-to-read bullet points
-- 📋 **Copy to Clipboard**: One-click copying of summaries
-- 🎨 **Modern UI**: Beautiful, responsive design with smooth animations
-- ⚡ **Fast Processing**: Instant summarization using advanced algorithms
+- **Smart Text Summarization**: Automatically extracts key points from selected text
+- **Bullet Point Display**: Clean, organized summary in easy-to-read bullet points
+- **Copy to Clipboard**: One-click copying of summaries
+- **Modern UI**: Beautiful, responsive design with smooth animations
+- **Fast Processing**: Instant summarization using advanced algorithms
 
 ## Installation
 
 1. Download or clone this repository
-2. Create placeholder icons (or use your own):
+2. Create placeholder icons:
    - `icon16.png` (16x16 pixels)
    - `icon48.png` (48x48 pixels) 
    - `icon128.png` (128x128 pixels)
@@ -27,23 +27,8 @@ A Chrome extension that summarizes highlighted text and displays key points in b
 1. **Select Text**: Highlight any text on any webpage
 2. **Open Extension**: Click the TLDR Chan icon in your browser toolbar
 3. **View Summary**: The extension will automatically summarize the selected text into bullet points
-4. **Copy Summary**: Click the "📋 Copy Summary" button to copy the summary to your clipboard
-5. **New Text**: Click "🔄 New Text" to clear and select different text
-
-## Creating Icons
-
-If you don't have icons, you can create simple placeholder images:
-
-### Option 1: Create PNG files with text
-Create three PNG files with the following specifications:
-- `icon16.png`: 16x16 pixels with "📝" emoji or "T" text
-- `icon48.png`: 48x48 pixels with "📝" emoji or "TLDR" text  
-- `icon128.png`: 128x128 pixels with "📝" emoji or "TLDR Chan" text
-
-### Option 2: Use online icon generators
-- Visit https://favicon.io/favicon-generator/
-- Create icons with text "TLDR" or use the 📝 emoji
-- Download and rename the files as needed
+4. **Copy Summary**: Click the "Copy Summary" button to copy the summary to your clipboard
+5. **New Text**: Click "New Text" to clear and select different text
 
 ## Technical Details
 
@@ -93,15 +78,3 @@ The extension uses a sophisticated extractive summarization approach:
 - All processing happens locally in your browser
 - Selected text is only stored temporarily in local browser storage
 - No tracking or analytics
-
-## Support
-
-If you encounter any issues:
-1. Check that all files are present in the extension folder
-2. Ensure icons are created and properly named
-3. Verify the extension is enabled in Chrome
-4. Try refreshing the webpage and reselecting text
-
-## License
-
-This project is open source and available under the MIT License. 
