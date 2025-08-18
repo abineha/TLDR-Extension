@@ -1,80 +1,172 @@
-# TLDR - Chrome Extension
+# TLDR Chan - AI-Powered Text Summarizer
 
-A Chrome extension that summarizes highlighted text and displays key points in bullet format.
+A Chrome extension that uses **Hugging Face's AI models** to generate high-quality summaries of highlighted text. Features intelligent summarization with user-configurable settings and fallback to rule-based summarization.
 
-## Features
+## ✨ Features
 
-- **Smart Text Summarization**: Automatically extracts key points from selected text
-- **Bullet Point Display**: Clean, organized summary in easy-to-read bullet points
-- **Copy to Clipboard**: One-click copying of summaries
-- **Modern UI**: Beautiful, responsive design with smooth animations
-- **Fast Processing**: Instant summarization using advanced algorithms
+- **🤖 AI-Powered Summaries**: Uses Hugging Face's BART models for intelligent text summarization
+- **🔑 User API Keys**: Each user provides their own free Hugging Face API key (no account limits)
+- **⚙️ Customizable Settings**: Adjust summary length, model selection, and behavior
+- **🔄 Fallback Mode**: Automatic fallback to rule-based summarization if API fails
+- **📋 Copy to Clipboard**: One-click copying of summaries
+- **🎨 Modern UI**: Clean, responsive design with smooth animations
+- **💾 Auto-Save**: Remembers selected text between sessions
 
-## Installation
+## 🚀 Quick Start
+
+### 1. Install the Extension
 
 1. Download or clone this repository
-2. Create placeholder icons:
-   - `icon16.png` (16x16 pixels)
-   - `icon48.png` (48x48 pixels) 
-   - `icon128.png` (128x128 pixels)
-3. Open Chrome and go to `chrome://extensions/`
-4. Enable "Developer mode" in the top right
-5. Click "Load unpacked" and select the extension folder
-6. The TLDR Chan extension will appear in your toolbar
+2. Open Chrome and go to `chrome://extensions/`
+3. Enable "Developer mode" in the top right
+4. Click "Load unpacked" and select the extension folder
 
-## How to Use
+### 2. Get Your Free API Key
 
-1. **Select Text**: Highlight any text on any webpage
-2. **Open Extension**: Click the TLDR Chan icon in your browser toolbar
-3. **View Summary**: The extension will automatically summarize the selected text into bullet points
-4. **Copy Summary**: Click the "Copy Summary" button to copy the summary to your clipboard
-5. **New Text**: Click "New Text" to clear and select different text
+1. Visit [Hugging Face](https://huggingface.co/settings/tokens)
+2. Create a free account (takes 2 minutes)
+3. Generate a new API token
+4. Copy the token (starts with `hf_`)
 
-## Technical Details
+### 3. Configure the Extension
 
-- **Manifest Version**: 3 (latest Chrome extension standard)
-- **Permissions**: `activeTab`, `storage`
-- **Content Script**: Detects text selection across all websites
-- **Summarization**: Custom algorithm using extractive summarization techniques
-- **Storage**: Uses Chrome's local storage for selected text persistence
+1. Click the TLDR Chan icon in your browser toolbar
+2. Click the settings gear icon (⚙️)
+3. Paste your API key in the settings page
+4. Test the connection with the "Test API" button
+5. Save your settings
 
-## Files Structure
+### 4. Start Summarizing
+
+1. Highlight any text on any webpage
+2. Click the TLDR Chan extension icon
+3. Get instant AI-powered summaries!
+
+## 🛠️ Settings Configuration
+
+### AI Models Available
+
+- **BART Large CNN** (Recommended): Best quality summaries
+- **BART Base**: Faster processing, good quality
+- **DistilBART CNN**: Lightweight, quick summaries
+
+### Summary Settings
+
+- **Maximum Length**: 100-300 characters
+- **Minimum Length**: 30-80 characters
+- **Fallback Mode**: Use rule-based summarization if API fails
+- **Auto-Save**: Remember selected text between sessions
+
+## 📁 File Structure
 
 ```
-tldr-chan/
-├── manifest.json       # Extension configuration
-├── content.js          # Content script for text selection
-├── popup.html          # Extension popup interface
-├── popup.css           # Styling for the popup
-├── popup.js            # Popup logic and summarization
-├── icon16.png          # 16x16 icon (create this)
-├── icon48.png          # 48x48 icon (create this)
-├── icon128.png         # 128x128 icon (create this)
-└── README.md           # This file
+tldr chan/
+├── manifest.json          # Extension configuration
+├── popup.html             # Main popup interface
+├── popup.js               # Popup logic with AI integration
+├── popup.css              # Popup styling
+├── settings.html          # Settings page
+├── settings.js            # Settings management
+├── settings.css           # Settings styling
+├── content.js             # Content script for text selection
+├── icon16.png             # 16x16 icon
+├── icon48.png             # 48x48 icon
+├── icon128.png            # 128x128 icon
+└── README.md              # This file
 ```
 
-## Summarization Algorithm
+## 🔧 Technical Details
 
-The extension uses a sophisticated extractive summarization approach:
+### API Integration
 
-1. **Text Preprocessing**: Cleans and normalizes the input text
-2. **Sentence Scoring**: Evaluates sentences based on:
-   - Position in text (first/last sentences often important)
-   - Word frequency and importance
-   - Presence of capitalized words and numbers
-   - Sentence length optimization
-3. **Selection**: Chooses top-scoring sentences (up to 5 key points)
-4. **Ordering**: Maintains original text order for coherence
+The extension uses Hugging Face's Inference API with the following models:
+- `facebook/bart-large-cnn` (default)
+- `facebook/bart-base`
+- `sshleifer/distilbart-cnn-12-6`
 
-## Browser Compatibility
+### Storage
 
-- Chrome (Manifest V3)
-- Edge (Chromium-based)
-- Other Chromium-based browsers
+- API keys and settings stored in `chrome.storage.local`
+- Selected text cached for better performance
+- Secure handling of user credentials
 
-## Privacy
+### Permissions
 
-- No data is sent to external servers
-- All processing happens locally in your browser
-- Selected text is only stored temporarily in local browser storage
-- No tracking or analytics
+- `activeTab`: Access to current tab for text selection
+- `storage`: Save settings and cached data
+- `https://api-inference.huggingface.co/*`: Hugging Face API access
+
+## 🎯 How It Works
+
+1. **Text Selection**: Content script detects highlighted text on any webpage
+2. **API Call**: Sends text to Hugging Face's AI model for summarization
+3. **Processing**: AI generates intelligent summary based on user settings
+4. **Formatting**: Summary is formatted into bullet points with key word highlighting
+5. **Display**: Clean, modern interface shows original text and summary
+6. **Fallback**: If API fails, uses rule-based summarization (if enabled)
+
+## 🔒 Privacy & Security
+
+- **No Data Collection**: Your text never leaves your browser except for API calls
+- **User API Keys**: Each user manages their own Hugging Face account
+- **Local Storage**: All settings stored locally in your browser
+- **Secure API**: Uses HTTPS for all API communications
+
+## 🆚 Comparison: AI vs Rule-Based
+
+| Feature | AI-Powered | Rule-Based |
+|---------|------------|------------|
+| **Quality** | High-quality, contextual summaries | Basic keyword extraction |
+| **Speed** | 2-5 seconds (API dependent) | Instant |
+| **Cost** | Free (user's API quota) | Free |
+| **Reliability** | Requires internet connection | Works offline |
+| **Customization** | Multiple models, length settings | Fixed algorithm |
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**"API key not configured"**
+- Go to settings and enter your Hugging Face API key
+- Make sure the key starts with `hf_`
+
+**"Invalid API key"**
+- Check your Hugging Face token at https://huggingface.co/settings/tokens
+- Generate a new token if needed
+
+**"API rate limit reached"**
+- Hugging Face has rate limits on free accounts
+- Wait a few minutes and try again
+- Consider upgrading to a paid plan for higher limits
+
+**"Model is currently loading"**
+- Some models take time to load on Hugging Face servers
+- Try again in 30-60 seconds
+- Consider switching to a faster model in settings
+
+**Extension not working**
+- Check that the extension is enabled in `chrome://extensions/`
+- Try refreshing the webpage
+- Check browser console for error messages
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is open source and available under the MIT License.
+
+## 🙏 Acknowledgments
+
+- Hugging Face for providing free AI models
+- Chrome Extensions API for the platform
+- The open source community for inspiration and tools
+
+---
+
+**Made with ❤️ for better reading experiences**
