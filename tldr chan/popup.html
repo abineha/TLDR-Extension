@@ -8,10 +8,17 @@
 </head>
 <body>
     <div class="container">
+        <div class="header-container">
+            <button id="settings-btn" class="settings-btn" title="Settings">⚙️</button>
+        </div>
+        
         <main class="main-content">
             <div id="no-text" class="status-message">
                 <div class="icon">🖱️➛</div>
                 <p>Highlight some text on any webpage, then click this extension to get a summary!</p>
+                <p style="font-size: 12px; margin-top: 8px; opacity: 0.8;">
+                    💡 Get AI-powered summaries by setting up your Hugging Face API key in settings
+                </p>
             </div>
             
             <div id="loading" class="status-message hidden">
@@ -22,6 +29,12 @@
             <div id="error" class="status-message error hidden">
                 <div class="icon">⚠️</div>
                 <p id="error-message">Something went wrong. Please try again.</p>
+            </div>
+            
+            <div id="api-error" class="status-message error hidden">
+                <div class="icon">🔑</div>
+                <p>API key not configured. Please set up your Hugging Face API key in settings.</p>
+                <button id="open-settings" class="btn btn-primary">Open Settings</button>
             </div>
             
             <div id="summary-container" class="hidden">
@@ -43,6 +56,7 @@
         </main>
     </div>
     
+    <script src="nlp_algo.js"></script>
     <script src="popup.js"></script>
 </body>
 </html> 

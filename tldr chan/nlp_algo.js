@@ -1,14 +1,138 @@
-// Popup JavaScript for TLDR Chan Extension with Hugging Face API Integration
+// Offline NLP summarization logic exposed as a simple namespace for reuse in popup
+
+(function() {
+	function generateSummary(text) {
+		try {
+			const cleanText = text.replace(/\s+/g, ' ').trim();
+			const sentences = cleanText.split(/[.!?]+/).filter(s => s.trim().length > 10);
+			if (sentences.length === 0) {
+				return ['No meaningful content found to summarize.'];
+			}
+			if (sentences.length <= 2) {
+				return extractKeyPhrases(cleanText);
+			}
+			const scoredSentences = sentences.map(sentence => ({
+				text: sentence.trim(),
+				score: calculateSentenceScore(sentence, cleanText)
+			}));
+			scoredSentences.sort((a, b) => b.score - a.score);
+			const summaryCount = Math.min(5, Math.max(2, Math.ceil(sentences.length * 0.3)));
+			const topSentences = scoredSentences.slice(0, summaryCount);
+			const originalOrder = topSentences.sort((a, b) => cleanText.indexOf(a.text) - cleanText.indexOf(b.text));
+			return originalOrder.map(item => boldKeyWords(item.text.trim(), cleanText)).filter(s => s.length > 0);
+		} catch (error) {
+			console.error('Rule-based summarization error:', error);
+			return ['Unable to generate summary. Please try with different text.'];
+		}
+	}
+
+	function calculateSentenceScore(sentence, fullText) {
+		let score = 0;
+		const words = sentence.toLowerCase().split(/\s+/);
+		const idealLength = 20;
+		const lengthScore = 1 - Math.abs(words.length - idealLength) / idealLength;
+		score += lengthScore * 0.2;
+		const sentences = fullText.split(/[.!?]+/);
+		const position = sentences.findIndex(s => s.includes(sentence));
+		if (position === 0 || position === sentences.length - 1) {
+			score += 0.3;
+		}
+		const commonWords = new Set(['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'be', 'been', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could', 'should', 'this', 'that', 'these', 'those']);
+		const meaningfulWords = words.filter(word => word.length > 3 && !commonWords.has(word));
+		meaningfulWords.forEach(word => {
+			const frequency = (fullText.toLowerCase().match(new RegExp(word, 'g')) || []).length;
+			score += frequency * 0.1;
+		});
+		const capitalizedWords = sentence.match(/[A-Z][a-z]+/g) || [];
+		score += capitalizedWords.length * 0.15;
+		if (/\d+/.test(sentence)) score += 0.2;
+		if (/[A-Z]{2,}/.test(sentence)) score += 0.1;
+		return score;
+	}
+
+	function extractKeyPhrases(text) {
+		const phrases = [];
+		const words = text.split(/\s+/);
+		const chunks = text.split(/[,;.!?]/).filter(chunk => chunk.trim().length > 5);
+		chunks.forEach(chunk => {
+			const trimmed = chunk.trim();
+			if (trimmed.length > 10 && trimmed.length < 100) {
+				phrases.push(trimmed);
+			}
+		});
+		if (phrases.length === 0) {
+			for (let i = 0; i < words.length; i += 8) {
+				const chunk = words.slice(i, i + 8).join(' ');
+				if (chunk.trim().length > 10) {
+					phrases.push(chunk.trim());
+				}
+			}
+		}
+		return phrases.slice(0, 4).map(phrase => boldKeyWords(phrase, text));
+	}
+
+	function boldKeyWords(sentence, fullText) {
+		try {
+			const allWords = fullText.toLowerCase().match(/\b[a-z]{3,}\b/g) || [];
+			const wordFreq = {};
+			allWords.forEach(word => { wordFreq[word] = (wordFreq[word] || 0) + 1; });
+			const commonWords = new Set([
+				'the', 'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'had', 'was', 'one', 'our', 'has', 'have',
+				'this', 'that', 'with', 'from', 'they', 'she', 'her', 'his', 'him', 'been', 'than', 'who', 'oil', 'its',
+				'now', 'find', 'may', 'say', 'use', 'way', 'will', 'each', 'which', 'their', 'time', 'what', 'about',
+				'would', 'there', 'could', 'other', 'after', 'first', 'well', 'also', 'new', 'want', 'because', 'any',
+				'these', 'give', 'day', 'most', 'us', 'or', 'just', 'where', 'much', 'good', 'some', 'come', 'very',
+				'when', 'how', 'many', 'them', 'being', 'if', 'should', 'said', 'get', 'here', 'more', 'like', 'take',
+				'into', 'year', 'your', 'know', 'work', 'than', 'only', 'think', 'over', 'also', 'back', 'see', 'go',
+				'make', 'even', 'before', 'look', 'too', 'means', 'people', 'such', 'through', 'under', 'does'
+			]);
+			const wordsToHighlight = new Set();
+			const words = sentence.match(/\b[\w']+\b/g) || [];
+			words.forEach(word => {
+				const lowerWord = word.toLowerCase();
+				if (commonWords.has(lowerWord) || word.length < 3) return;
+				if (/^[A-Z]/.test(word) && word.length > 3) wordsToHighlight.add(word);
+				if (wordFreq[lowerWord] && wordFreq[lowerWord] >= 2) wordsToHighlight.add(word);
+				if (/\d/.test(word)) wordsToHighlight.add(word);
+				if (/^[A-Z]{2,}$/.test(word)) wordsToHighlight.add(word);
+				if (word.length >= 7 && !commonWords.has(lowerWord)) wordsToHighlight.add(word);
+			});
+			let highlightedCount = 0;
+			const maxHighlights = Math.min(4, Math.ceil(words.length / 4));
+			let result = sentence;
+			const sortedWords = Array.from(wordsToHighlight).sort((a, b) => {
+				const freqA = (wordFreq[a.toLowerCase()] || 0);
+				const freqB = (wordFreq[b.toLowerCase()] || 0);
+				if (freqA !== freqB) return freqB - freqA;
+				return b.length - a.length;
+			});
+			for (const word of sortedWords) {
+				if (highlightedCount >= maxHighlights) break;
+				const regex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}\\b`, 'g');
+				if (regex.test(result)) {
+					result = result.replace(regex, `<strong>${word}</strong>`);
+					highlightedCount++;
+				}
+			}
+			return result;
+		} catch (error) {
+			console.error('Bold formatting error:', error);
+			return sentence;
+		}
+	}
+
+	window.nlpAlgo = {
+		summarize: generateSummary
+	};
+})();
+// Popup JavaScript for TLDR Chan Extension
 
 document.addEventListener('DOMContentLoaded', function() {
     const elements = {
-        settingsBtn: document.getElementById('settings-btn'),
         noText: document.getElementById('no-text'),
         loading: document.getElementById('loading'),
         error: document.getElementById('error'),
         errorMessage: document.getElementById('error-message'),
-        apiError: document.getElementById('api-error'),
-        openSettings: document.getElementById('open-settings'),
         summaryContainer: document.getElementById('summary-container'),
         originalText: document.getElementById('original-text'),
         summaryList: document.getElementById('summary-list'),
@@ -21,63 +145,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     async function init() {
         try {
-            console.log('Initializing popup...');
-            await updateHeaderStatus();
             const selectedText = await getSelectedText();
-            console.log('Selected text length:', selectedText ? selectedText.length : 0);
-            
             if (selectedText && selectedText.trim().length > 10) {
                 showLoading();
                 const summary = await summarizeText(selectedText);
-                if (summary) {
-                    displaySummary(selectedText, summary);
-                } else {
-                    showNoText(); // Fallback if no summary generated
-                }
+                displaySummary(selectedText, summary);
             } else {
                 showNoText();
             }
         } catch (error) {
-            console.error('Init error:', error);
+            console.error('Error:', error);
             showError('Failed to load selected text. Please try again.');
-        }
-    }
-
-    async function updateHeaderStatus() {
-        const settings = await getSettings();
-        const headerTitle = document.querySelector('.header h1');
-        if (headerTitle) {
-            if (settings.mode === 'bart' && settings.apiKey && settings.apiKey.trim()) {
-                headerTitle.textContent = 'TLDR Chan 🤖';
-            } else {
-                headerTitle.textContent = 'TLDR Chan 📝';
-            }
         }
     }
 
     async function getSelectedText() {
         return new Promise((resolve) => {
+            // First try to get text from current tab
             chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-                if (chrome.runtime.lastError) {
-                    console.error('Tab query error:', chrome.runtime.lastError);
-                    // Fallback to storage
-                    chrome.storage.local.get(['selectedText'], function(result) {
-                        resolve(result.selectedText || '');
-                    });
-                    return;
-                }
-                
-                if (!tabs || tabs.length === 0) {
-                    console.log('No active tab found');
-                    chrome.storage.local.get(['selectedText'], function(result) {
-                        resolve(result.selectedText || '');
-                    });
-                    return;
-                }
-
                 chrome.tabs.sendMessage(tabs[0].id, { action: 'getSelectedText' }, function(response) {
                     if (chrome.runtime.lastError) {
-                        console.log('Content script not available, using storage fallback');
                         // Fallback to storage
                         chrome.storage.local.get(['selectedText'], function(result) {
                             resolve(result.selectedText || '');
@@ -90,131 +177,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    async function summarizeText(text) {
-        try {
-            console.log('Starting summarization...');
-            const settings = await getSettings();
-            console.log('Settings loaded:', { mode: settings.mode, hasApiKey: !!settings.apiKey });
-
-            if (settings.mode === 'bart') {
-                if (!settings.apiKey || settings.apiKey.trim() === '') {
-                    console.log('BART mode selected but no API key configured');
-                    showApiError();
-                    return null;
-                }
-                try {
-                    console.log('Attempting BART AI summarization...');
-                    const aiSummary = await callHuggingFaceAPI(text, settings.apiKey);
-                    if (aiSummary && aiSummary.trim().length > 0) {
-                        console.log('AI summary generated successfully');
-                        return formatAISummary(aiSummary);
-                    } else {
-                        throw new Error('Empty AI response');
-                    }
-                } catch (error) {
-                    console.error('AI summarization failed:', error);
-                    throw error;
-                }
-            }
-
-            // Default: offline NLP algorithm
-            console.log('Using offline NLP summarization');
-            if (window.nlpAlgo && typeof window.nlpAlgo.summarize === 'function') {
-                return window.nlpAlgo.summarize(text);
-            }
-            // Fallback to internal rule-based if namespace missing
-            return generateRuleBasedSummary(text);
-        } catch (error) {
-            console.error('Summarization error:', error);
-            if (String(error.message || '').includes('401')) {
-                showError('Invalid API key. Please check your settings.');
-            } else if (String(error.message || '').includes('429')) {
-                showError('API rate limit reached. Please try again later.');
-            } else if (String(error.message || '').includes('503')) {
-                showError('AI model is currently loading. Please try again in a moment.');
-            } else {
-                showError('Failed to generate summary. Please try again.');
-            }
-            return null;
-        }
-    }
-
-    async function callHuggingFaceAPI(text, apiKey) {
-        console.log('Calling Hugging Face API...');
-        const response = await fetch(`https://api-inference.huggingface.co/models/facebook/bart-large-cnn`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                inputs: text,
-                parameters: {
-                    max_length: 200,
-                    min_length: 30,
-                    do_sample: false,
-                    num_beams: 4,
-                    early_stopping: true
-                }
-            })
+    function summarizeText(text) {
+        return new Promise((resolve) => {
+            // Simulate processing time for better UX
+            setTimeout(() => {
+                const summary = generateSummary(text);
+                resolve(summary);
+            }, 1000);
         });
-
-        console.log('API response status:', response.status);
-
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log('API response data:', data);
-        
-        if (Array.isArray(data) && data.length > 0) {
-            return data[0].summary_text || data[0].generated_text || '';
-        } else if (data.summary_text) {
-            return data.summary_text;
-        } else if (data.generated_text) {
-            return data.generated_text;
-        } else {
-            throw new Error('Unexpected API response format');
-        }
     }
 
-    function formatAISummary(aiSummary) {
-        console.log('Formatting AI summary:', aiSummary);
-        // Split AI summary into bullet points
-        const sentences = aiSummary.split(/[.!?]+/).filter(s => s.trim().length > 10);
-        
-        if (sentences.length === 0) {
-            return [aiSummary.trim()];
-        }
-
-        // Format each sentence as a bullet point with key word highlighting
-        return sentences.map(sentence => {
-            const trimmed = sentence.trim();
-            if (trimmed.length === 0) return null;
-            
-            // Apply basic highlighting to important words
-            return highlightKeyWords(trimmed);
-        }).filter(item => item !== null);
-    }
-
-    function highlightKeyWords(sentence) {
-        // Simple keyword highlighting for AI-generated summaries
-        const words = sentence.split(' ');
-        const highlighted = words.map(word => {
-            // Highlight capitalized words, numbers, and longer words
-            if (/^[A-Z]/.test(word) || /\d/.test(word) || word.length > 6) {
-                return `<strong>${word}</strong>`;
-            }
-            return word;
-        });
-        
-        return highlighted.join(' ');
-    }
-
-    function generateRuleBasedSummary(text) {
+    function generateSummary(text) {
         try {
-            console.log('Generating rule-based summary...');
             // Clean and prepare text
             const cleanText = text.replace(/\s+/g, ' ').trim();
             
@@ -250,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Apply bold formatting to key words in each sentence
             return originalOrder.map(item => boldKeyWords(item.text.trim(), cleanText)).filter(s => s.length > 0);
         } catch (error) {
-            console.error('Rule-based summarization error:', error);
+            console.error('Summarization error:', error);
             return ['Unable to generate summary. Please try with different text.'];
         }
     }
@@ -375,7 +349,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     wordsToHighlight.add(word);
                 }
                 
-                // 5. Long, potentially important words
+                // 5. Important action words
+                const actionWords = ['developed', 'created', 'implemented', 'designed', 'built', 'established', 'achieved', 'improved', 'increased', 'decreased', 'reduced', 'enhanced', 'optimized', 'launched', 'published', 'completed', 'successful', 'effective', 'significant', 'important', 'critical', 'essential', 'innovative', 'advanced', 'revolutionary', 'breakthrough', 'solution', 'problem', 'challenge', 'opportunity', 'strategy', 'approach', 'method', 'technique', 'process', 'system', 'technology', 'platform', 'framework', 'model', 'theory', 'concept', 'principle', 'factor', 'element', 'component', 'feature', 'benefit', 'advantage', 'result', 'outcome', 'impact', 'effect', 'consequence'];
+                if (actionWords.includes(lowerWord)) {
+                    wordsToHighlight.add(word);
+                }
+                
+                // 6. Long, potentially important words
                 if (word.length >= 7 && !commonWords.has(lowerWord)) {
                     wordsToHighlight.add(word);
                 }
@@ -414,56 +394,30 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    async function getSettings() {
-        return new Promise((resolve) => {
-            chrome.storage.local.get(['settings'], function(result) {
-                const defaultSettings = {
-                    mode: 'nlp', // 'nlp' | 'bart'
-                    apiKey: ''
-                };
-                const stored = result.settings || {};
-                resolve({ ...defaultSettings, ...stored });
-            });
-        });
-    }
-
     function showNoText() {
-        console.log('Showing no text state');
         hideAll();
         elements.noText.classList.remove('hidden');
     }
 
     function showLoading() {
-        console.log('Showing loading state');
         hideAll();
         elements.loading.classList.remove('hidden');
     }
 
     function showError(message) {
-        console.log('Showing error:', message);
         hideAll();
         elements.errorMessage.textContent = message;
         elements.error.classList.remove('hidden');
     }
 
-    function showApiError() {
-        console.log('Showing API error state');
-        hideAll();
-        elements.apiError.classList.remove('hidden');
-    }
-
     function displaySummary(originalText, summaryPoints) {
-        if (!summaryPoints || summaryPoints.length === 0) {
-            console.log('No summary points to display');
-            showError('No summary could be generated. Please try with different text.');
-            return;
-        }
-        
-        console.log('Displaying summary with', summaryPoints.length, 'points');
         hideAll();
         
-        // Display original text (full text)
-        elements.originalText.textContent = originalText;
+        // Display original text (truncated if too long)
+        const truncatedText = originalText.length > 200 
+            ? originalText.substring(0, 200) + '...' 
+            : originalText;
+        elements.originalText.textContent = truncatedText;
 
         // Display summary points
         elements.summaryList.innerHTML = '';
@@ -478,19 +432,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function hideAll() {
-        [elements.noText, elements.loading, elements.error, elements.apiError, elements.summaryContainer]
+        [elements.noText, elements.loading, elements.error, elements.summaryContainer]
             .forEach(el => el.classList.add('hidden'));
     }
 
     // Event listeners
-    elements.settingsBtn.addEventListener('click', function() {
-        chrome.tabs.create({ url: chrome.runtime.getURL('settings.html') });
-    });
-
-    elements.openSettings.addEventListener('click', function() {
-        chrome.tabs.create({ url: chrome.runtime.getURL('settings.html') });
-    });
-
     elements.copyButton.addEventListener('click', function() {
         const summaryText = Array.from(elements.summaryList.children)
             .map(li => '• ' + li.textContent) // textContent strips HTML formatting for clean copy
