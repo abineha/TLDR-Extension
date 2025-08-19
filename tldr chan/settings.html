@@ -14,7 +14,7 @@
         <main class="main-content">
             <div class="settings-section">
                 <div class="setting-item">
-                    <label for="mode-select">Summarization Mode:</label>
+                    <label for="mode-select"><b>Summarization Mode:</b></label>
                     <select id="mode-select">
                         <option value="nlp" selected>Offline NLP (default)</option>
                         <option value="bart">BART CNN (Hugging Face API)</option>
@@ -23,10 +23,10 @@
 
                 <div id="api-config" class="api-section hidden">
                     
-                    <label for="api-key">Hugging Face API Key:</label>
+                    <label for="api-key"><b>Hugging Face API Key:</b></label>
                     <div class="input-group">
                         <input type="password" id="api-key" placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" />
-                        <button id="toggle-visibility" class="toggle-btn" title="Show/Hide">👁️</button>
+                        <button id="toggle-visibility" class="toggle-btn" title="Show/Hide">👀</button>
                     </div>
                     <p class="help-text">
                         Get your free API key from 
@@ -40,9 +40,9 @@
             
             
             <div class="actions">
-                <button id="save-settings" class="btn btn-primary">💾 Save Settings</button>
-                <button id="test-api" class="btn btn-secondary">🧪 Test API</button>
-                <button id="reset-settings" class="btn btn-danger">🔄 Reset to Defaults</button>
+                <button id="save-settings" class="btn btn-primary"><b>SAVE SETTINGS</b></button>
+                <button id="test-api" class="btn btn-secondary"><b>TEST API</b></button>
+                <button id="reset-settings" class="btn btn-danger"><b>RESET TO DEFAULTS</b></button>
             </div>
             
             <div id="status-message" class="status-message hidden"></div>

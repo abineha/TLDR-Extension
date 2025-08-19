@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.toggleVisibility.addEventListener('click', function() {
             const type = elements.apiKey.type === 'password' ? 'text' : 'password';
             elements.apiKey.type = type;
-            elements.toggleVisibility.textContent = type === 'password' ? '👁️' : '🙈';
+            elements.toggleVisibility.textContent = type === 'password' ? '👀' : '🙈';
         });
 
         // Save settings

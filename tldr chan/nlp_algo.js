@@ -4,22 +4,15 @@
 	function generateSummary(text) {
 		try {
 			const cleanText = text.replace(/\s+/g, ' ').trim();
-			const sentences = cleanText.split(/[.!?]+/).filter(s => s.trim().length > 10);
+			// Split into sentences and keep punctuation; do not omit any sentences
+			const sentences = (cleanText.match(/[^.!?]+[.!?]*/g) || []).map(s => s.trim());
 			if (sentences.length === 0) {
 				return ['No meaningful content found to summarize.'];
 			}
-			if (sentences.length <= 2) {
-				return extractKeyPhrases(cleanText);
-			}
-			const scoredSentences = sentences.map(sentence => ({
-				text: sentence.trim(),
-				score: calculateSentenceScore(sentence, cleanText)
-			}));
-			scoredSentences.sort((a, b) => b.score - a.score);
-			const summaryCount = Math.min(5, Math.max(2, Math.ceil(sentences.length * 0.3)));
-			const topSentences = scoredSentences.slice(0, summaryCount);
-			const originalOrder = topSentences.sort((a, b) => cleanText.indexOf(a.text) - cleanText.indexOf(b.text));
-			return originalOrder.map(item => boldKeyWords(item.text.trim(), cleanText)).filter(s => s.length > 0);
+			// Map each original sentence to a single highlighted bullet
+			return sentences
+				.filter(s => s.length > 0)
+				.map(s => boldKeyWords(s, cleanText));
 		} catch (error) {
 			console.error('Rule-based summarization error:', error);
 			return ['Unable to generate summary. Please try with different text.'];
