@@ -1,18 +1,20 @@
-# TLDR Chan - AI-Powered Text Summarizer
+# TLDR Chrome Extension - AI-Powered Text Summarizer
 
-A Chrome extension that uses **Hugging Face's AI models** to generate high-quality summaries of highlighted text. Features intelligent summarization with user-configurable settings and fallback to rule-based summarization.
+A Chrome extension that provides **two summarization modes**: an offline NLP algorithm (default) and optional AI-powered summaries using Hugging Face's BART model.
 
-## ✨ Features
+##  Features
 
-- **🤖 AI-Powered Summaries**: Uses Hugging Face's BART models for intelligent text summarization
-- **🔑 User API Keys**: Each user provides their own free Hugging Face API key (no account limits)
-- **⚙️ Customizable Settings**: Adjust summary length, model selection, and behavior
-- **🔄 Fallback Mode**: Automatic fallback to rule-based summarization if API fails
-- **📋 Copy to Clipboard**: One-click copying of summaries
-- **🎨 Modern UI**: Clean, responsive design with smooth animations
-- **💾 Auto-Save**: Remembers selected text between sessions
+- ** Offline NLP Mode (Default)**: Works completely offline using intelligent rule-based summarization
+- ** BART AI Mode**: Optional Hugging Face API integration for high-quality AI summaries
+- ** Simple Settings**: Just two modes - no complex configuration needed
+- ** User API Keys**: Each user provides their own free Hugging Face API key (optional)
+- ** Copy to Clipboard**: One-click copying of summaries
+- ** Modern UI**: Clean, responsive design with smooth animations
+- ** Auto-Save**: Remembers selected text between sessions
 
-## 🚀 Quick Start
+---
+
+##  Quick Start
 
 ### 1. Install the Extension
 
@@ -21,41 +23,33 @@ A Chrome extension that uses **Hugging Face's AI models** to generate high-quali
 3. Enable "Developer mode" in the top right
 4. Click "Load unpacked" and select the extension folder
 
-### 2. Get Your Free API Key
-
-1. Visit [Hugging Face](https://huggingface.co/settings/tokens)
-2. Create a free account (takes 2 minutes)
-3. Generate a new API token
-4. Copy the token (starts with `hf_`)
-
-### 3. Configure the Extension
-
-1. Click the TLDR Chan icon in your browser toolbar
-2. Click the settings gear icon (⚙️)
-3. Paste your API key in the settings page
-4. Test the connection with the "Test API" button
-5. Save your settings
-
-### 4. Start Summarizing
+### 2. Start Summarizing (Offline Mode)
 
 1. Highlight any text on any webpage
 2. Click the TLDR Chan extension icon
-3. Get instant AI-powered summaries!
+3. Get instant offline summaries! (No setup required)
 
-## 🛠️ Settings Configuration
+### 3. Optional: Enable AI Mode
 
-### AI Models Available
+1. Click the settings gear icon (⚙️) in the extension
+2. Select "BART CNN (Hugging Face API)" mode
+3. Get your free API key from [Hugging Face](https://huggingface.co/settings/tokens)
+4. Enter your API key and save
+5. Test the connection with the "Test API" button
 
-- **BART Large CNN** (Recommended): Best quality summaries
-- **BART Base**: Faster processing, good quality
-- **DistilBART CNN**: Lightweight, quick summaries
+## Two Modes Explained
 
-### Summary Settings
+### Mode 1: Offline NLP (Default) 
+- **Works offline** - no internet connection required
+- **Instant results** - no waiting for API calls
+- **Smart algorithm** - extracts key sentences with keyword highlighting
+- **Always available** - perfect for privacy-conscious users
 
-- **Maximum Length**: 100-300 characters
-- **Minimum Length**: 30-80 characters
-- **Fallback Mode**: Use rule-based summarization if API fails
-- **Auto-Save**: Remember selected text between sessions
+### Mode 2: BART AI (Optional) 
+- **High-quality summaries** - uses Facebook's BART Large CNN model
+- **Requires API key** - free Hugging Face account needed
+- **Better understanding** - AI comprehends context and meaning
+- **Rate limited** - depends on your Hugging Face quota
 
 ## 📁 File Structure
 
@@ -63,105 +57,114 @@ A Chrome extension that uses **Hugging Face's AI models** to generate high-quali
 tldr chan/
 ├── manifest.json          # Extension configuration
 ├── popup.html             # Main popup interface
-├── popup.js               # Popup logic with AI integration
+├── popup.js               # Popup logic with mode routing
 ├── popup.css              # Popup styling
-├── settings.html          # Settings page
+├── nlp_algo.js            # Offline NLP summarization
+├── settings.html          # Settings page (simplified)
 ├── settings.js            # Settings management
 ├── settings.css           # Settings styling
 ├── content.js             # Content script for text selection
+├── tldr_bg.png           # Main popup background
+├── settings_bg.png        # Settings page background
 ├── icon16.png             # 16x16 icon
 ├── icon48.png             # 48x48 icon
 ├── icon128.png            # 128x128 icon
 └── README.md              # This file
 ```
 
-## 🔧 Technical Details
 
-### API Integration
+## Technical Details
 
-The extension uses Hugging Face's Inference API with the following models:
-- `facebook/bart-large-cnn` (default)
-- `facebook/bart-base`
-- `sshleifer/distilbart-cnn-12-6`
+### Offline NLP Algorithm
+- **Location**: `nlp_algo.js`
+- **Method**: Rule-based sentence extraction with keyword scoring
+- **Features**: Position analysis, keyword frequency, smart highlighting
+- **Output**: One bullet point per original sentence with bold keywords
+
+### AI Integration (Optional)
+- **Model**: `facebook/bart-large-cnn`
+- **API**: Hugging Face Inference API
+- **Fallback**: Automatically uses offline mode if API fails
 
 ### Storage
-
-- API keys and settings stored in `chrome.storage.local`
-- Selected text cached for better performance
-- Secure handling of user credentials
+- **Settings**: Mode preference and API key (if provided)
+- **Cache**: Selected text between sessions
+- **Security**: API keys stored locally in `chrome.storage.local`
 
 ### Permissions
-
 - `activeTab`: Access to current tab for text selection
 - `storage`: Save settings and cached data
-- `https://api-inference.huggingface.co/*`: Hugging Face API access
+- `https://api-inference.huggingface.co/*`: Hugging Face API access (only when BART mode is used)
 
-## 🎯 How It Works
+## How It Works
 
 1. **Text Selection**: Content script detects highlighted text on any webpage
-2. **API Call**: Sends text to Hugging Face's AI model for summarization
-3. **Processing**: AI generates intelligent summary based on user settings
+2. **Mode Check**: Extension checks if user has selected BART mode with API key
+3. **Summarization**:
+   - **Offline Mode**: Uses `nlp_algo.js` for instant rule-based summaries
+   - **BART Mode**: Sends text to Hugging Face API for AI-powered summaries
 4. **Formatting**: Summary is formatted into bullet points with key word highlighting
-5. **Display**: Clean, modern interface shows original text and summary
-6. **Fallback**: If API fails, uses rule-based summarization (if enabled)
+5. **Display**: Clean interface shows original text and summary
 
-## 🔒 Privacy & Security
+## Privacy & Security
 
-- **No Data Collection**: Your text never leaves your browser except for API calls
-- **User API Keys**: Each user manages their own Hugging Face account
+- **Offline Mode**: Your text never leaves your browser
+- **AI Mode**: Text only sent to Hugging Face when explicitly enabled
+- **User Control**: You choose which mode to use
 - **Local Storage**: All settings stored locally in your browser
 - **Secure API**: Uses HTTPS for all API communications
 
-## 🆚 Comparison: AI vs Rule-Based
+## Mode Comparison
 
-| Feature | AI-Powered | Rule-Based |
-|---------|------------|------------|
-| **Quality** | High-quality, contextual summaries | Basic keyword extraction |
-| **Speed** | 2-5 seconds (API dependent) | Instant |
-| **Cost** | Free (user's API quota) | Free |
-| **Reliability** | Requires internet connection | Works offline |
-| **Customization** | Multiple models, length settings | Fixed algorithm |
+| Feature | Offline NLP | BART AI |
+|---------|-------------|---------|
+| **Speed** | Instant | 2-10 seconds |
+| **Quality** | Good (rule-based) | Excellent (AI-powered) |
+| **Privacy** | 100% offline | Text sent to API |
+| **Reliability** | Always works | Requires internet |
+| **Setup** | None needed | API key required |
+| **Cost** | Free | Free (your API quota) |
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
-### Common Issues
+### Offline Mode Issues
+- **No summary generated**: Try highlighting longer text (at least 10 characters)
+- **Extension not working**: Check that it's enabled in `chrome://extensions/`
 
-**"API key not configured"**
-- Go to settings and enter your Hugging Face API key
-- Make sure the key starts with `hf_`
+### BART Mode Issues
+- **"Testing..." stuck**: Wait up to 1 minute for first API call, refresh if longer
+- **"Invalid API key"**: Check your Hugging Face token at https://huggingface.co/settings/tokens
+- **"API rate limit"**: Wait a few minutes or upgrade your Hugging Face plan
+- **"Model loading"**: Try again in 30-60 seconds
 
-**"Invalid API key"**
-- Check your Hugging Face token at https://huggingface.co/settings/tokens
-- Generate a new token if needed
+## Addition Information
+## Custom Pixel Art Backgrounds
 
-**"API rate limit reached"**
-- Hugging Face has rate limits on free accounts
-- Wait a few minutes and try again
-- Consider upgrading to a paid plan for higher limits
+This extension features **hand-drawn pixel art backgrounds** created with:
+- **Wacom tablet** for precise digital drawing
+- **Aseprite** for pixel-perfect art creation
 
-**"Model is currently loading"**
-- Some models take time to load on Hugging Face servers
-- Try again in 30-60 seconds
-- Consider switching to a faster model in settings
+### Background Images:
+- **`tldr_bg.png`**: Main popup background
+- **`settings_bg.png`**: Settings page background 
 
-**Extension not working**
-- Check that the extension is enabled in `chrome://extensions/`
-- Try refreshing the webpage
-- Check browser console for error messages
+Background is a pixel art design that is simple and enhances the user experience while maintaining readability and modern functionality.
 
-## 🤝 Contributing
+### Pixel Art
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+**`tldr_bg.png`** - Main Extension Background
+- **Purpose**: Creates engaging visual experience for text summarization
+- **Technique**: Hand-drawn with Wacom + Aseprite
 
-## 📄 License
+**`settings_bg.png`** - Settings Page Background  
+- **Purpose**: Maintains visual consistency across the extension
+- **Technique**: Pixel-perfect art using Aseprite
+
+## License
 
 This project is open source and available under the MIT License.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Hugging Face for providing free AI models
 - Chrome Extensions API for the platform
@@ -169,4 +172,5 @@ This project is open source and available under the MIT License.
 
 ---
 
-**Made with ❤️ for better reading experiences**
+**Default Mode**: Works offline, no setup required  
+**AI Mode**: Optional upgrade for premium summaries
