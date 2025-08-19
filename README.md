@@ -5,13 +5,13 @@ A Chrome extension that provides **two summarization modes**: an offline NLP alg
 ## DEMO
 
 <p align="center">
-  <img src="output screenshots\output1.png" alt="TLDR Extension Interface" width="350">
+  <img src="tldr chan\output screenshots\output1.png" alt="TLDR Extension Interface" width="350">
   <br>
   <em>Main popup of chrome extension to summarize highlighted paragraph</em>
 </p>
 
 <p align="center">
-  <img src="output screenshots\output6.png" alt="Settings Page" width="350">
+  <img src="tldr chan\output screenshots\output6.png" alt="Settings Page" width="350">
   <br>
   <em>Settings page where API connection is established</em>
 </p>
@@ -175,16 +175,17 @@ Background is a pixel art design that is simple and enhances the user experience
 - **Technique**: Pixel-perfect art using Aseprite
 
 <p align="center">
-  <img src="tldr_bg.png" alt="TLDR Extension Interface" width="350">
+  <img src="tldr chan/tldr_bg.png" alt="TLDR Extension Interface" width="350">
   <br>
   <em>Main popup with custom pixel art background</em>
 </p>
 
 <p align="center">
-  <img src="settings_bg.png" alt="Settings Page" width="350">
+  <img src="tldr chan/settings_bg.png" alt="Settings Page" width="350">
   <br>
   <em>Settings page with complementary pixel art design</em>
 </p>
+
 
 ## License
 
