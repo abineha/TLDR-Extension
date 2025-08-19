@@ -175,13 +175,13 @@ Background is a pixel art design that is simple and enhances the user experience
 - **Technique**: Pixel-perfect art using Aseprite
 
 <p align="center">
-  <img src="tldr/tldr_bg.png" alt="TLDR Extension Interface" width="350">
+  <img src="tldr chan/tldr_bg.png" alt="TLDR Extension Interface" width="350">
   <br>
   <em>Main popup with custom pixel art background</em>
 </p>
 
 <p align="center">
-  <img src="tldr/settings_bg.png" alt="Settings Page" width="350">
+  <img src="tldr chan/settings_bg.png" alt="Settings Page" width="350">
   <br>
   <em>Settings page with complementary pixel art design</em>
 </p>

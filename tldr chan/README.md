@@ -2,6 +2,20 @@
 
 A Chrome extension that provides **two summarization modes**: an offline NLP algorithm (default) and optional AI-powered summaries using Hugging Face's BART model.
 
+## DEMO
+
+<p align="center">
+  <img src="output screenshots\output1.png" alt="TLDR Extension Interface" width="350">
+  <br>
+  <em>Main popup of chrome extension to summarize highlighted paragraph</em>
+</p>
+
+<p align="center">
+  <img src="output screenshots\output6.png" alt="Settings Page" width="350">
+  <br>
+  <em>Settings page where API connection is established</em>
+</p>
+
 ##  Features
 
 - Offline NLP Mode (Default) : Works completely offline using intelligent rule-based summarization
