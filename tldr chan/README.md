@@ -4,13 +4,13 @@ A Chrome extension that provides **two summarization modes**: an offline NLP alg
 
 ##  Features
 
-- ** Offline NLP Mode (Default)**: Works completely offline using intelligent rule-based summarization
-- ** BART AI Mode**: Optional Hugging Face API integration for high-quality AI summaries
-- ** Simple Settings**: Just two modes - no complex configuration needed
-- ** User API Keys**: Each user provides their own free Hugging Face API key (optional)
-- ** Copy to Clipboard**: One-click copying of summaries
-- ** Modern UI**: Clean, responsive design with smooth animations
-- ** Auto-Save**: Remembers selected text between sessions
+- Offline NLP Mode (Default) : Works completely offline using intelligent rule-based summarization
+- BART AI Mode : Optional Hugging Face API integration for high-quality AI summaries
+- Simple Settings : Just two modes - no complex configuration needed
+- User API Keys : Each user provides their own free Hugging Face API key (optional)
+- Copy to Clipboard : One-click copying of summaries
+- Modern UI : Clean, responsive design with smooth animations
+- Auto-Save : Remembers selected text between sessions
 
 ---
 
@@ -159,6 +159,18 @@ Background is a pixel art design that is simple and enhances the user experience
 **`settings_bg.png`** - Settings Page Background  
 - **Purpose**: Maintains visual consistency across the extension
 - **Technique**: Pixel-perfect art using Aseprite
+
+<p align="center">
+  <img src="tldr_bg.png" alt="TLDR Extension Interface" width="350">
+  <br>
+  <em>Main popup with custom pixel art background</em>
+</p>
+
+<p align="center">
+  <img src="settings_bg.png" alt="Settings Page" width="350">
+  <br>
+  <em>Settings page with complementary pixel art design</em>
+</p>
 
 ## License
 
