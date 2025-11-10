@@ -70,7 +70,7 @@ A Chrome extension that provides **two summarization modes**: an offline NLP alg
 - **Better understanding** - AI comprehends context and meaning
 - **Rate limited** - depends on your Hugging Face quota
 
-## 📁 File Structure
+## File Structure
 
 ```
 tldr chan/
